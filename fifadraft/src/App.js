@@ -16,7 +16,6 @@ import { DataGrid } from '@mui/x-data-grid';
 
 import React from 'react'
 
-
 // Create Meillisearch Client
 // const client = new MeiliSearch({
 //   host: 'http://127.0.0.1:7700',
@@ -39,12 +38,15 @@ import React from 'react'
 // // Create Reference to Firestore db
 // const db = getFirestore(app);
 
+let playercount = 0
 
 class User extends React.Component {
-  constructor({ name="" }) {
+  constructor({ name="LMAO" }) {
     super()
     this.name = name
     this.roster = []
+    playercount++
+    this.id = playercount
   }
 
 
@@ -53,8 +55,7 @@ class User extends React.Component {
   }
 }
 
-
-function Roster({ user }) {
+function Roster({ name }) {
   const columns = [
     {
       field: 'Known As',
@@ -531,28 +532,14 @@ function Roster({ user }) {
       editable: true,
       },      
     ];
-
   return (
-    <Collapsible trigger={user.name}>
+    <Collapsible trigger={name.name}>
       <Box sx={{ height: 400, width: '80%' }}>
-      <DataGrid
-        rows={user.roster}
-        columns={columns}
-        // initialState={{
-        //   pagination: {
-        //     paginationModel: {
-        //       pageSize: 5,
-        //     },
-        //   },
-        // }}
-        // pageSizeOptions={[35]}
-        autoHeight={true}
-      />
+        <DataGrid rows={players} columns={columns} />
     </Box>
     </Collapsible>
   );
 }
-
 
 export default function App() {
   let Nathan = new User("Nathan")
@@ -561,12 +548,12 @@ export default function App() {
 
 
   let players = [Nathan, Sam, Cam]
-  const rosters = players.map((player) => <div key={player.name}><Roster name={player.name}/></div>)
+  const rosters = players.map((player) => <div key={player.id}><Roster name={"player.name"}/></div>)
 
   return  (
     <>
     <div><center><h1>FIFADraft</h1></center></div>
-    {rosters}
+      {rosters}
     </>
   )
 }
