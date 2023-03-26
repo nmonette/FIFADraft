@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.14",
+    "@mui/x-data-grid": "^6.0.3",
+    "react-collapsible": "^2.10.0"
+  }
+}
