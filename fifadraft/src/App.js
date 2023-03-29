@@ -6,18 +6,14 @@ import './App.css';
 // import { collection, addDoc } from "firebase/firestore"; 
 
 
-// import { MeiliSearch } from 'meilisearch'
+import { MeiliSearch } from 'meilisearch'
+import { InstantSearch, SearchBox, Hits, Highlight } from 'react-instantsearch-dom';
+import { instantMeiliSearch } from '@meilisearch/instant-meilisearch';
 import players from './playerdata/fifa23.json'
 
 import React from 'react'
 
 import { Roster } from './Roster.js'
-
-// Create Meillisearch Client
-// const client = new MeiliSearch({
-//   host: 'http://127.0.0.1:7700',
-//   apiKey: 'Key',
-// })
 
 // const firebaseConfig = {
 //   apiKey: "AIzaSyB1i1KcrVBmvNY1CxeKdjhM6_XIgSQ45FY",
@@ -37,9 +33,6 @@ import { Roster } from './Roster.js'
 
 let playercount = 0
 
-
-const empty = [{'id': 0, 'Known As': null, 'Full Name': null, 'Overall': null, 'Potential': null, 'Value(in Euro)': null, 'Positions Played': null, 'Best Position': '', 'Nationality': '', 'Age': '', 'Height(in cm)': '', 'Weight(in kg)': '', 'TotalStats': '', 'BaseStats': '', 'Club Name': '', 'Club Position': '', 'Preferred Foot': '', 'Weak Foot Rating': '', 'Skill Moves': '', 'National Team Name': '', 'National Team Position': '', 'Attacking Work Rate': '', 'Defensive Work Rate': '', 'Pace Total': '', 'Shooting Total': '', 'Passing Total': '', 'Dribbling Total': '', 'Defending Total': '', 'Physicality Total': '', 'Crossing': '', 'Finishing': '', 'Heading Accuracy': '', 'Short Passing': '', 'Volleys': '', 'Dribbling': '', 'Curve': '', 'Freekick Accuracy': '', 'LongPassing': '', 'BallControl': '', 'Acceleration': '', 'Sprint Speed': '', 'Agility': '', 'Reactions': '', 'Balance': '', 'Shot Power': '', 'Jumping': '', 'Stamina': '', 'Strength': '', 'Long Shots': '', 'Aggression': '', 'Interceptions': '', 'Positioning': '', 'Vision': '', 'Penalties': '', 'Composure': '', 'Marking': '', 'Standing Tackle': '', 'Sliding Tackle': '', 'Goalkeeper Diving': '', 'Goalkeeper Handling': '', ' GoalkeeperKicking': '', 'Goalkeeper Positioning': '', 'Goalkeeper Reflexes': '', 'ST Rating': '', 'LW Rating': '', 'LF Rating': '', 'CF Rating': '', 'RF Rating': '', 'RW Rating': '', 'CAM Rating': '', 'LM Rating': '', 'CM Rating': '', 'RM Rating': '', 'LWB Rating': '', 'CDM Rating': '', 'RWB Rating': '', 'LB Rating': '', 'CB Rating': '', 'RB Rating': '', 'GK Rating': ''}]
-
 class User {
   constructor({ title="error_title" }) {
     this.title = title
@@ -54,6 +47,20 @@ class User {
   }
 }
 
+async function addDocs() {
+  // Create Meillisearch Client
+  const client = new instantMeiliSearch(
+    "http://localhost:7700",
+    "XXEyxrFxR0qHYbT2G7ndp4ny0Ert3dYW2ci-tZBIC0Y"
+  )
+  
+  let index = client.index("players")
+  let response = await index.addDocuments(players)
+  console.log(response)
+
+  return client
+}
+
 export default function App() {
   let Nathan = new User({title: "Nathan"})
   let Sam = new User({title: "Sam"})
@@ -62,9 +69,18 @@ export default function App() {
   let users = [Nathan, Sam, Cam]
   const rosters = users.map((user) => <div key={user.id}><Roster user={user}/></div>)
 
+  const client = addDocs()
+  
+  const Hit = ({ hit }) => <Highlight attribute="name" hit={hit} />;
+
   return  (
     <>
       <div><center><h1>FIFADraft</h1></center></div>
+      <div><center>
+      <InstantSearch indexName="players" searchClient={client}><SearchBox />
+        <Hits hitComponent={Hit} />
+      </InstantSearch>
+      </center></div>
       {rosters}
     </>
   )
