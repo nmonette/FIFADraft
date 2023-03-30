@@ -482,13 +482,15 @@ const columns = [
       },      
     ];
 
-export function Roster({ user }) {
+export default function Roster({ user }) {
       return (
+        <div key={user.id}>
         <Collapsible trigger={user.title}>
           <Box sx={{ height: 400, width: '80%' }}>
-            <DataGrid rows={user.roster} columns={columns} />
+             <DataGrid rows={user.roster} columns={columns} />
         </Box>
         </Collapsible>
+        </div>
     );
   }
 

@@ -12,8 +12,13 @@ import { instantMeiliSearch } from '@meilisearch/instant-meilisearch';
 import players from './playerdata/fifa23.json'
 
 import React from 'react'
+import { useState, useEffect } from 'react';
 
-import { Roster } from './Roster.js'
+import CustomPopup from './components/Popup.js'
+
+import Button from '@mui/material/Button';
+
+
 
 // const firebaseConfig = {
 //   apiKey: "AIzaSyB1i1KcrVBmvNY1CxeKdjhM6_XIgSQ45FY",
@@ -31,57 +36,22 @@ import { Roster } from './Roster.js'
 // // Create Reference to Firestore db
 // const db = getFirestore(app);
 
-let playercount = 0
-
-class User {
-  constructor({ title="error_title" }) {
-    this.title = title
-    this.roster = [] 
-    playercount += 1
-    this.id = playercount
-  }
-
-
-  addPlayer({ player }) {
-    this.roster.push(player)
-  }
-}
-
-async function addDocs() {
-  // Create Meillisearch Client
-  const client = new instantMeiliSearch(
-    "http://localhost:7700",
-    "XXEyxrFxR0qHYbT2G7ndp4ny0Ert3dYW2ci-tZBIC0Y"
-  )
-  
-  let index = client.index("players")
-  let response = await index.addDocuments(players)
-  console.log(response)
-
-  return client
-}
-
 export default function App() {
-  let Nathan = new User({title: "Nathan"})
-  let Sam = new User({title: "Sam"})
-  let Cam = new User({title: "Cam"})
-
-  let users = [Nathan, Sam, Cam]
-  const rosters = users.map((user) => <div key={user.id}><Roster user={user}/></div>)
-
-  const client = addDocs()
-  
-  const Hit = ({ hit }) => <Highlight attribute="name" hit={hit} />;
+  let [menus, updateMenus] = useState([])
+  console.log(menus)
+  let [users, updateUsers] = useState([])
+  console.log(users)
 
   return  (
     <>
+    <CustomPopup users={users} updateUsers={updateUsers} menus={menus} updateMenus={updateMenus}/>
       <div><center><h1>FIFADraft</h1></center></div>
       <div><center>
-      <InstantSearch indexName="players" searchClient={client}><SearchBox />
-        <Hits hitComponent={Hit} />
-      </InstantSearch>
+        <Button variant="contained" onClick={users.addPlayer} disableElevation>
+          Select player
+        </Button>
       </center></div>
-      {rosters}
+      {menus}
     </>
   )
 }
