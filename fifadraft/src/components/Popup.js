@@ -29,22 +29,23 @@ const db = getDatabase(app);
 // Create Reference to Firebase Auth
 const auth = getAuth()
 
-function checkRegistered(user) {
-  if (user) {
-    get(child(db, `users/${user.uid}`)).then((snapshot) => {
+function checkRegistered(user, isOpen) {
+  if (isOpen.current) {
+    return true
+  }
+  if (user !== null) {
+    get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
       if (snapshot.exists()) {
         return true
       }
       return false
-      return true
     })
   }
-  else {
-    return false
-  }
+  return false
 }
 
 // disabled={!checkRegistered(auth.currentUser)}
+// trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>}
 
 export default function CustomPopup({ users, updateUsers, menus, updateMenus }) {
     const value = useRef('')
@@ -52,7 +53,7 @@ export default function CustomPopup({ users, updateUsers, menus, updateMenus }) 
     const isOpen = useRef()
     return (
     <>
-    <Popup defaultOpen closeOnDocumentClick={false} ref={isOpen} trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>} position="center center" modal>
+    <Popup defaultOpen closeOnDocumentClick={false} ref={isOpen}  position="center center" modal>
         <center>
             <div><h2>Registration</h2></div>
             <div><TextField id="outlined-basic" label="Username" variant="outlined" inputRef={value} required></TextField></div>

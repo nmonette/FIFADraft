@@ -2,7 +2,7 @@ import './App.css';
 
 import { initializeApp } from "firebase/app";
 
-import { getDatabase } from "firebase/database"; 
+import { getDatabase, ref, onValue } from "firebase/database"; 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import { MeiliSearch } from 'meilisearch'
@@ -13,7 +13,7 @@ import players from './playerdata/fifa23.json'
 import React from 'react'
 import { useState, useEffect } from 'react';
 
-import CustomPopup from './components/Popup.js'
+import { CustomPopup, User } from './components/Popup.js'
 
 import Button from '@mui/material/Button';
 
