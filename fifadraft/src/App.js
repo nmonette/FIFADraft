@@ -13,8 +13,8 @@ import players from './playerdata/fifa23.json'
 import React from 'react'
 import { useState, useEffect } from 'react';
 
-import { CustomPopup, User } from './components/Popup.js'
-
+import  { CustomPopup } from './components/Popup.js'
+import User from './User.js'
 import Button from '@mui/material/Button';
 
 
@@ -39,9 +39,26 @@ export default function App() {
   let [menus, updateMenus] = useState([])
   let [users, updateUsers] = useState([])
 
+  onValue(ref(db, 'users/'), (snapshot) => {
+    const data = snapshot.val()
+
+    var temp = []
+    for (var user in data) {
+      temp.push(new User({roster: [], uid: user.uid, title: user.title}))
+    }
+    if (temp.length !== users.length){
+      updateUsers(temp)
+      updateMenus(users.map(user => {
+        <div key={user.uid}>{user.comp}</div>
+      }))
+    }
+
+  })
+
+
   return  (
     <>
-    <CustomPopup users={users} updateUsers={updateUsers} menus={menus} updateMenus={updateMenus}/>
+    <CustomPopup/>
       <div><center><h1>FIFADraft</h1></center></div>
       <div><center>
         <Button variant="contained" onClick={users.addPlayer} disableElevation>

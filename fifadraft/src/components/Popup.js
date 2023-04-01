@@ -1,7 +1,7 @@
 import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css';
 
-import { User } from "./User.js"
+import User from "../User.js"
 
 import { useRef, useState } from 'react'
 import { TextField, Button, Avatar } from '@mui/material'
@@ -29,31 +29,32 @@ const db = getDatabase(app);
 // Create Reference to Firebase Auth
 const auth = getAuth()
 
-function checkRegistered(user, isOpen) {
-  if (isOpen.current) {
-    return true
-  }
+function checkRegistered(user) {
   if (user !== null) {
-    get(child(ref(db), `users/${user.uid}`)).then((snapshot) => {
+    get(ref(db), `users/${user.uid}`).then((snapshot) => {
       if (snapshot.exists()) {
         return true
       }
-      return false
+      else{
+        return false
+      }
     })
   }
-  return false
+  else{
+    return false
+  }
 }
 
 // disabled={!checkRegistered(auth.currentUser)}
 // trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>}
 
-export default function CustomPopup({ users, updateUsers, menus, updateMenus }) {
+export function CustomPopup({ }) {
     const value = useRef('')
-    const [roster, updateRoster] = useState([])
     const isOpen = useRef()
+    console.log("registered: " + checkRegistered(auth.currentUser))
     return (
     <>
-    <Popup defaultOpen closeOnDocumentClick={false} ref={isOpen}  position="center center" modal>
+    <Popup defaultOpen={!checkRegistered(auth.currentUser)} closeOnDocumentClick={false} ref={isOpen}  position="center center" modal>
         <center>
             <div><h2>Registration</h2></div>
             <div><TextField id="outlined-basic" label="Username" variant="outlined" inputRef={value} required></TextField></div>
@@ -63,13 +64,12 @@ export default function CustomPopup({ users, updateUsers, menus, updateMenus }) 
                   console.log(value.current.value + " is registered")
                 })
               onAuthStateChanged(auth, (user) => {
-                if (user && value.current.value.length !== 0) {
-                  const newUser = new User({update: updateRoster, uid: user.uid, roster: roster, title: value.current.value})
-                  
-                  set(ref(db, 'users/' + newUser.uid), newUser.json())
-      
-                  updateUsers([...users, newUser])
-                  updateMenus([...menus, newUser.comp])
+                if (user && value.current.value.length !== 0) {                  
+                  set(ref(db, 'users/' + user.uid), {
+                    "title": value.current.value,
+                    "roster": [],
+                    "uid": user.uid
+                  })
                   isOpen.current.close()
                 }
               })

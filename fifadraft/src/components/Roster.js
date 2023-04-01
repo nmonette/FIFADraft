@@ -3,8 +3,6 @@ import Collapsible  from 'react-collapsible';
 import Box  from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { useState } from 'react';
-
 const columns = [
     {
       field: 'Known As',
