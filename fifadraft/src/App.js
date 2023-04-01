@@ -2,9 +2,8 @@ import './App.css';
 
 import { initializeApp } from "firebase/app";
 
-import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database"; 
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import { MeiliSearch } from 'meilisearch'
 import { InstantSearch, SearchBox, Hits, Highlight } from 'react-instantsearch-dom';
@@ -37,11 +36,8 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 export default function App() {
-
   let [menus, updateMenus] = useState([])
-  console.log(menus)
   let [users, updateUsers] = useState([])
-  console.log(users)
 
   return  (
     <>

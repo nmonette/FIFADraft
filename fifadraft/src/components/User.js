@@ -1,13 +1,10 @@
 import Roster from './Roster';
 
-let playercount = 0
-
-class User {
-  constructor({ update, roster, title="error_title"}) {
+export class User {
+  constructor({ update, roster, uid, title="error_title"}) {
     this.title = title
     this.roster = roster
-    playercount += 1
-    this.id = playercount
+    this.uid = uid
     this.update = update
     this.comp = <Roster user={this}/>
   }
@@ -15,7 +12,13 @@ class User {
   addPlayer({ player }) {
     this.roster = [ ...this.roster, player]
     this.update(this.roster)
-
   }
   
+  json() {
+    return {
+        "title": this.title,
+        "roster": this.roster,
+        "uid": this.uid
+    }
+  }
 }
