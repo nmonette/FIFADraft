@@ -1,29 +1,14 @@
 import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css';
 
-import Roster from './Roster';
+import User from "./User.js"
 
 import { useRef, useState } from 'react'
 import { TextField, Button, Avatar } from '@mui/material'
 
-let playercount = 0
 
-class User {
-    constructor({ update, roster, title="error_title"}) {
-      this.title = title
-      this.roster = roster
-      playercount += 1
-      this.id = playercount
-      this.update = update
-      this.comp = <Roster user={this}/>
-    }
-  
-    addPlayer({ player }) {
-      this.roster = [...this.roster, player]
-      this.update(this.roster)
-  
-    }
-  }
+
+
 
 export default function CustomPopup({ users, updateUsers, menus, updateMenus }) {
     const value = useRef('')
@@ -31,7 +16,7 @@ export default function CustomPopup({ users, updateUsers, menus, updateMenus }) 
     const ref = useRef()
     return (
     <>
-    <Popup ref={ref} trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>} position="center center" modal>
+    <Popup defaultOpen={true} closeOnDocumentClick={false} ref={ref} trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>} position="center center" modal>
         <center>
             <div><h2>Registration</h2></div>
             <div><TextField id="outlined-basic" label="Username" variant="outlined" inputRef={value} required></TextField></div>

@@ -1,9 +1,9 @@
 import './App.css';
 
-// import { initializeApp } from "firebase/app";
+import { initializeApp } from "firebase/app";
 
-// import { getFirestore } from "firebase/firestore";
-// import { collection, addDoc } from "firebase/firestore"; 
+import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database"; 
 
 
 import { MeiliSearch } from 'meilisearch'
@@ -20,23 +20,24 @@ import Button from '@mui/material/Button';
 
 
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyB1i1KcrVBmvNY1CxeKdjhM6_XIgSQ45FY",
-//   authDomain: "fifadraft-614b0.firebaseapp.com",
-//   projectId: "fifadraft-614b0",
-//   storageBucket: "fifadraft-614b0.appspot.com",
-//   messagingSenderId: "797524994217",
-//   appId: "1:797524994217:web:ea84780db1ca017ca261b8",
-//   measurementId: "G-FMGZ95DBN6"
-// };
+const firebaseConfig = {
+  apiKey: "AIzaSyB1i1KcrVBmvNY1CxeKdjhM6_XIgSQ45FY",
+  authDomain: "fifadraft-614b0.firebaseapp.com",
+  projectId: "fifadraft-614b0",
+  storageBucket: "fifadraft-614b0.appspot.com",
+  messagingSenderId: "797524994217",
+  appId: "1:797524994217:web:ea84780db1ca017ca261b8",
+  measurementId: "G-FMGZ95DBN6"
+};
 
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-// // Create Reference to Firestore db
-// const db = getFirestore(app);
+// Create Reference to Firestore db
+const db = getDatabase(app);
 
 export default function App() {
+
   let [menus, updateMenus] = useState([])
   console.log(menus)
   let [users, updateUsers] = useState([])
