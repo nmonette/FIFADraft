@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { getDatabase, ref, onValue, set, get, child, push } from "firebase/database"; 
+import { getDatabase, ref, onValue, set, get, child } from "firebase/database"; 
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import Roster  from "./components/Roster";
+import { CustomPopup } from "./components/Popup";
 import players from './playerdata/fifa23.json'
 
 const config = {
@@ -49,7 +50,7 @@ function checkEqual(x, y) {
 function retrieveComponents(snapshot, update, components) {
     const temp = []
     for (var user in snapshot.toJSON()) {
-        temp.push(<Roster user={snapshot.val()[user]} />)
+        temp.push(<div key={user}><Roster user={snapshot.val()[user]} /></div>)
     }
     console.log(temp)
     if (checkEqual(temp, components.current)) {

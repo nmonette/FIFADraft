@@ -1,8 +1,6 @@
 import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css';
 
-import User from "../User.js"
-
 import { useRef, useState } from 'react'
 import { TextField, Button, Avatar } from '@mui/material'
 
@@ -29,18 +27,17 @@ const db = getDatabase(app);
 // Create Reference to Firebase Auth
 const auth = getAuth()
 
-function checkRegistered(user) {
+async function checkRegistered(user) {
   if (user !== null) {
-    get(ref(db), `users/${user.uid}`).then((snapshot) => {
-      if (snapshot.exists()) {
-        return true
-      }
-      else{
-        return false
-      }
-    })
+    const snapshot = await get(child(ref(db), `users/${user.uid}`))
+    if (snapshot.exists()) {
+      return true
+    }
+    else{
+      return false
+    }
   }
-  else{
+  else {
     return false
   }
 }
