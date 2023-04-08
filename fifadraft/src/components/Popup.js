@@ -1,31 +1,17 @@
 import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css';
 
-import { useRef, useState } from 'react'
+import { useRef, useEffect } from 'react'
 import { TextField, Button, Avatar } from '@mui/material'
 
-import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, get, child } from "firebase/database"; 
-import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB1i1KcrVBmvNY1CxeKdjhM6_XIgSQ45FY",
-    authDomain: "fifadraft-614b0.firebaseapp.com",
-    projectId: "fifadraft-614b0",
-    storageBucket: "fifadraft-614b0.appspot.com",
-    messagingSenderId: "797524994217",
-    appId: "1:797524994217:web:ea84780db1ca017ca261b8",
-    measurementId: "G-FMGZ95DBN6"
-};
-  
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+import { Box, Divider } from '@mui/material';
 
-// Create Reference to Firebase Realtime DB
-const db = getDatabase(app);
+import { app, db, auth } from "../firebase_config.js"
+import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 
-// Create Reference to Firebase Auth
-const auth = getAuth()
+
 
 async function checkRegistered(user) {
   if (user !== null) {
@@ -43,15 +29,20 @@ async function checkRegistered(user) {
 }
 
 // disabled={!checkRegistered(auth.currentUser)}
+// defaultOpen={!checkRegistered(auth.currentUser)}
 // trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>}
 
-export function CustomPopup({ }) {
+export function CustomPopup({ getComponents }) {
     const value = useRef('')
     const isOpen = useRef()
-    console.log("registered: " + checkRegistered(auth.currentUser))
+    const registered = useRef(false)
+    useEffect(() =>{
+      registered.current = checkRegistered(auth.currentUser)
+    }, [])
+    // console.log("registered: " + checkRegistered(auth.currentUser))
     return (
     <>
-    <Popup defaultOpen={!checkRegistered(auth.currentUser)} closeOnDocumentClick={false} ref={isOpen}  position="center center" modal>
+    <Popup defaultOpen={!registered.current} closeOnEscape={false} closeOnDocumentClick={false} ref={isOpen}  position="center center" modal>
         <center>
             <div><h2>Registration</h2></div>
             <div><TextField id="outlined-basic" label="Username" variant="outlined" inputRef={value} required></TextField></div>
@@ -68,10 +59,12 @@ export function CustomPopup({ }) {
                     "uid": user.uid
                   })
                   isOpen.current.close()
+                  registered.current = true
                 }
               })
             }} disableElevation>Register</Button></div>
         </center>
+        <Divider>or</Divider>
     </Popup>
     </>
     )
