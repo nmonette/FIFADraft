@@ -482,13 +482,14 @@ const columns = [
 
 export default function Roster({ user }) {
   let roster = [];
-  console.log(`Test: ${user["roster"]}`)
   if (user['roster'] !== undefined) {
-    roster = user.roster
+    roster = user['roster']
   }
+  console.log(user)
+
   return (
-    <div key={user.uid}>
-    <Collapsible trigger={user.name}>
+    <div key={user["uid"]}>
+    <Collapsible trigger={user["title"]}>
       <Box sx={{ height: 400, width: '80%' }}>
         <DataGrid rows={roster} columns={columns}/>
     </Box>
