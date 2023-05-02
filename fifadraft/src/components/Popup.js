@@ -4,13 +4,13 @@ import 'reactjs-popup/dist/index.css';
 import players from '../playerdata/fifa23.json'
 
 import { useRef, useEffect } from 'react'
-import { TextField, Button, Avatar } from '@mui/material'
+import { TextField, Button } from '@mui/material'
 
-import { getDatabase, ref, set, get, child } from "firebase/database"; 
+import { ref, set, get, child } from "firebase/database"; 
 
-import { Box, Divider } from '@mui/material';
+import { Divider } from '@mui/material';
 
-import { app, db, auth } from "../firebase_config.js"
+import { db, auth } from "../firebase_config.js"
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 
 
