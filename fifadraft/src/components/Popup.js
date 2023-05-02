@@ -62,7 +62,7 @@ export function CustomPopup({ parentReg, lobby }) {
                   })
                   isOpen.current.close()
                   registered.current = true
-                  parentReg(true)
+                  parentReg(lobby)
                 }
               })
             }} disableElevation>Register</Button></div>

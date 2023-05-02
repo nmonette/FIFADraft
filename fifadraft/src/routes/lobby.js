@@ -20,7 +20,8 @@ function retrieveComponents(snapshot, update, components) {
 export async function lobbyLoader({ params }) {
     // console.log(params.lobbyid)
     try {
-        const snapshot = await get(child(ref(db), `lobbies/${params.lobbyid}`));
+        const snapshot = await get(child(ref(db), `lobbies/${params.lobbyid}/metadata`));
+        console.log(snapshot)
         if (snapshot.toJSON().turn !== -1) {
             return null
         }
@@ -37,7 +38,7 @@ export async function lobbyLoader({ params }) {
 export function Lobby() {
     const components = useRef(0)
     const [menus, updateMenus] = useState([])
-    const [registered, updateRegistered] = useLocalStorage(false) 
+    const [lobby_record, updateLobby] = useLocalStorage() 
     const lobby = useLoaderData()
 
     useEffect(() => {
@@ -48,12 +49,12 @@ export function Lobby() {
         })
     }, [components.current])
 
-    if (!registered && lobby !== null) {
+    if (lobby !== lobby_record) {
         return(
             <>
                 <h1><center>Fifa Draft</center></h1>
                 {menus}
-                <CustomPopup parentReg={updateRegistered} lobby={lobby} />
+                <CustomPopup parentReg={updateLobby} lobby={lobby} />
             </>
         )
     }
