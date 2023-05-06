@@ -482,16 +482,14 @@ const columns = [
 
 export default function Roster({ user }) {
   let roster = [];
-  if (user['roster'] !== undefined) {
-    roster = user['roster']
+  if (user['roster'] !== 0) {
+    roster = Object.values(user['roster'])
   }
-  console.log(user)
-
   return (
     <div key={user["uid"]}>
     <Collapsible trigger={user["title"]}>
       <Box sx={{ height: 400, width: '80%' }}>
-        <DataGrid rows={roster} columns={columns}/>
+        <DataGrid rows={roster} columns={columns} getRowId={(object) => object["id"]}/>
     </Box>
     </Collapsible>
     </div>

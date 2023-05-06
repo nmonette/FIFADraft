@@ -16,7 +16,7 @@ const router = createBrowserRouter([
         path: "lobby/:lobbyid", 
         element: <Lobby />,
         loader: lobbyLoader,
-        // errorElement: <Error />,
+        errorElement: <Error />,
     },
 ])
 

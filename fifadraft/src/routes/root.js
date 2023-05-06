@@ -32,6 +32,7 @@ export default function Root() {
     const handleClick = () => {
         set(ref(db, `lobbies/${lobby}/metadata`), {
             "turn": -1,
+            "taken": 0,
           }).then(
             () => navigate(lobby_link)
           )

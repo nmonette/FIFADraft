@@ -13,23 +13,6 @@ import { Divider } from '@mui/material';
 import { db, auth } from "../firebase_config.js"
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 
-
-
-async function checkRegistered(user) {
-  if (user !== null) {
-    const snapshot = await get(child(ref(db), `users/${user.uid}`))
-    if (snapshot.exists()) {
-      return true
-    }
-    else{
-      return false
-    }
-  }
-  else {
-    return false
-  }
-}
-
 // disabled={!checkRegistered(auth.currentUser)}
 // defaultOpen={!checkRegistered(auth.currentUser)}
 // trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>}
@@ -37,14 +20,10 @@ async function checkRegistered(user) {
 export function CustomPopup({ parentReg, lobby }) {
     const name_value = useRef("")
     const isOpen = useRef()
-    const registered = useRef(false)
-    useEffect(() =>{
-      registered.current = checkRegistered(auth.currentUser)
-    }, [])
-    // console.log("registered: " + checkRegistered(auth.currentUser))
+
     return (
     <>
-    <Popup defaultOpen={!registered.current} closeOnEscape={false} closeOnDocumentClick={false} ref={isOpen}  position="center center" modal>
+    <Popup defaultOpen={true} closeOnEscape={false} closeOnDocumentClick={false} ref={isOpen}  position="center center" modal>
         <center>
             <div><h2>Registration</h2></div>
             <div><TextField id="outlined-basic" label="Username" variant="outlined" inputRef={name_value} required></TextField></div>
@@ -57,17 +36,15 @@ export function CustomPopup({ parentReg, lobby }) {
                 if (user && name_value.current.value.length !== 0) {                  
                   set(ref(db, `lobbies/${lobby}/users/` + user.uid), {
                     "title": name_value.current.value,
-                    "roster": [],
+                    "roster": 0,
                     "uid": user.uid
                   })
                   isOpen.current.close()
-                  registered.current = true
                   parentReg(lobby)
                 }
               })
             }} disableElevation>Register</Button></div>
         </center>
-        <Divider>or</Divider>
     </Popup>
     </>
     )
