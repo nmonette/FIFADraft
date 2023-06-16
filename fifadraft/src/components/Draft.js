@@ -11,12 +11,12 @@ export function calculatePick(numPlayers, pick) { // Given a pick number and the
     }
 }
 
-export function Customautocomplete({ taken, up, inputRef }) { // code mostly copied from https://mui.com/material-ui/react-autocomplete/
+export function Customautocomplete({ up, inputRef }) { // code mostly copied from https://mui.com/material-ui/react-autocomplete/
     return (
         <Autocomplete
         id="playerselect"
         options={players}
-        getOptionDisabled={(option) => taken.includes(option["Full Name"])}
+        // getOptionDisabled={(option) => {taken.includes(option["Full Name"])}} // this is probably too slow
         getOptionLabel={(option) => option["Full Name"]}
         sx={{ width: 300 }}
         disabled={!up}
