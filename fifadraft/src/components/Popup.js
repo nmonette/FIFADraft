@@ -17,7 +17,7 @@ import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 // defaultOpen={!checkRegistered(auth.currentUser)}
 // trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>}
 
-export function CustomPopup({ parentReg, lobby }) {
+export function CustomPopup({ parentReg, lobby, registerRef}) {
     const name_value = useRef("")
     const isOpen = useRef()
 
@@ -41,6 +41,7 @@ export function CustomPopup({ parentReg, lobby }) {
                   })
                   isOpen.current.close()
                   parentReg(lobby)
+                  registerRef.current = true
                 }
               })
             }} disableElevation>Register</Button></div>

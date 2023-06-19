@@ -15,14 +15,43 @@ import { Button, Snackbar, Alert } from "@mui/material";
 import players from "../playerdata/fifa23.json"
  
 export async function lobbyLoader({ params }) {
+    let in_progress = false
+    let registered = false
+    // fix loader so that it will change lobby for when you join an in-progress draft... this means returning a larger object from the loader and then accessing it with useLoaderData()
     try {
-        const snapshot = await get(child(ref(db), `lobbies/${params.lobbyid}/metadata`));
-        if (snapshot.toJSON().turn !== -1) {
-            return null
+        const snapshot = await get(child(ref(db), `lobbies/${params.lobbyid}`));
+        if (!snapshot.exists() ) {
+            await set(ref(db, `lobbies/${params.lobbyid}/metadata`), {
+                "turn": -1,
+                "taken": 0,
+              })
+            return {
+                lobby: params.lobbyid,
+                registered: false, // fix this so that when they log on for the first time, this still lets them draft
+                in_progress: false,
+            }
+        }
+        else if (snapshot.toJSON().users === undefined) {
+            return {
+                lobby: params.lobbyid,
+                registered: false, 
+                in_progress: false,
+            }
         }
         else {
-            return (params.lobbyid)
-        } 
+            console.log(`turn:  ${snapshot.toJSON().metadata.turn}`)
+            if (snapshot.toJSON().metadata.turn !== -1) {
+                in_progress = true
+            }
+            if (auth.currentUser !== null && auth.currentUser.uid in snapshot.toJSON().users) {
+                registered = true;
+            }
+            return {
+                lobby: params.lobbyid,
+                registered: registered,
+                in_progress: in_progress,
+            }
+        }
     }
     catch (error) {
         console.error(error);
@@ -34,9 +63,11 @@ export function Lobby() {
     const components = useRef(0)
     const [menus, updateMenus] = useState([])
     const [lobby_record, updateLobby] = useLocalStorage() 
-    const lobby = useLoaderData()
-    const [up, updateUp] = useState(false)
+    const loaderData = useLoaderData()
+    const lobby = loaderData.lobby
     const player = useRef("")
+    let pickNumber = useRef(0)
+    let registered = useRef(false)
     let disableList = useRef([])
     const [errorOpen, updateError] = useState(false)
     const [successOpen, updateSuccess] = useState(false)
@@ -79,6 +110,9 @@ export function Lobby() {
             if (snapshot.exists) {
                 const temp = []
                 const data = snapshot.toJSON()
+
+                pickNumber.current = data.metadata.turn
+
                 for (var user in data.users) {
                     temp.push(<div key={user}><Roster user={data.users[user]} /></div>)
                 }
@@ -91,16 +125,28 @@ export function Lobby() {
         })
     }, [components.current])
 
-    if (lobby !== lobby_record) { // add "draft in session" snackbar component
+    if (!loaderData.registered && !loaderData.in_progress && !registered.current) { 
+        // registered.current = true
         return(
             <>
                 <h1><center>Fifa Draft</center></h1>
                 {menus}
-                <CustomPopup parentReg={updateLobby} lobby={lobby} />
+                <CustomPopup parentReg={updateLobby} lobby={lobby} registerRef={registered} />
             </>
         )
     }
-    else {
+    else if (!loaderData.registered && loaderData.in_progress && !registered.current) { // add "draft in session" snackbar component
+        return (
+            <>
+                <center>
+                    <h1>Fifa Draft</h1>
+                </center>
+                {menus}
+                <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={true} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Draft already in progress</Alert></Snackbar>
+            </>
+        )
+    }
+    else if (loaderData.registered || registered.current) {
         return(
             <>
                 <center>

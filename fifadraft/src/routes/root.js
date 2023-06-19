@@ -30,13 +30,8 @@ export default function Root() {
       };
 
     const handleClick = () => {
-        set(ref(db, `lobbies/${lobby}/metadata`), {
-            "turn": -1,
-            "taken": 0,
-          }).then(
-            () => navigate(lobby_link)
-          )
-        // navigator.clipboard.writeText("localhost:3000" + lobby_link)
+        navigator.clipboard.writeText("localhost:3000" + lobby_link)
+        navigate(lobby_link)
     }
     return (
         <>
