@@ -92,6 +92,7 @@ export function HostPopup({ lobby, openState, updateOpen, inProgress }) {
         }).then(() => {
           console.log("draft has begun")
           inProgress.current = true
+          updateOpen(false)
         })
       } 
     })

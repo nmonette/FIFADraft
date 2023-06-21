@@ -79,6 +79,7 @@ export function Lobby() {
     const [successOpen, updateSuccess] = useState(false)
     const [hostOpen, updateHost] = useState(false)
 
+    const [draftFinished, updateFinished] = useState(false)
 
     const handlePick = () => {
         if (!disableList.current.includes(player.current.value)) {
@@ -142,11 +143,24 @@ export function Lobby() {
                 if (data.metadata.taken !== 0) {
                     disableList.current = Object.values(data.metadata.taken)
                 }
+                if (data.metadata.turn !== -1 && data.metadata.turn === data.metadata.rosterSize * Object.keys(data.users).length) {
+                    updateFinished(true)
+                }
             }
         })
     }, [components.current])
 
-    if (!loaderData.registered && !loaderData.in_progress && !registered.current) { 
+    if (draftFinished) {
+        return (
+            <>
+                <h1><center>Fifa Draft</center></h1>
+                <center><Typography sx={{color: "red"}} variant="h4">Draft has concluded</Typography></center> 
+                {menus} 
+                {/* confetti here */}
+            </>
+        )
+    }
+    else if (!loaderData.registered && !loaderData.in_progress && !registered.current) { 
         return(
             <>
                 <h1><center>Fifa Draft</center></h1>
