@@ -3,25 +3,17 @@ import players from '../playerdata/fifa23.json'
 import { Autocomplete, TextField } from '@mui/material'
 
 export function calculatePick(numPlayers, pick) { // Given a pick number and the amount of players, and returns the index of the player will be up to pick in the draft
-    if (Math.floor(pick/numPlayers) % 2 === 1) {
-        return (pick-1) % numPlayers
+  Number.prototype.mod =  function(n) { // from https://web.archive.org/web/20090717035140if_/javascript.about.com/od/problemsolving/a/modulobug.htm
+    return ((this%n)+n)%n;
+    }
+  
+  if (Math.ceil( (pick+1) / numPlayers) % 2 === 1) {
+        return pick % numPlayers
     }
     else {
-        return (pick) % numPlayers
+        return (-pick-1).mod(numPlayers)
     }
 }
-
-export function GPTcalculatePick(n, current) { // made by GPT instead of mine
-    const size = 2 * (n - 1); // Size of one complete cycle
-    const cycle = Math.floor(current / size); // Number of complete cycles
-    const position = current % size; // Position within the current cycle
-  
-    if (position < n) {
-      return position; // Indices from 0 to n-1
-    } else {
-      return n - 1 - (position - n); // Indices from n-1 to 0
-    }
-  }
 
 export function Customautocomplete({ up, inputRef }) { // code mostly copied from https://mui.com/material-ui/react-autocomplete/
     return (
