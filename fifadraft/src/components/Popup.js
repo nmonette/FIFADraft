@@ -6,9 +6,9 @@ import players from '../playerdata/fifa23.json'
 import { useRef, useEffect } from 'react'
 import { TextField, Button } from '@mui/material'
 
-import { ref, set, get, child } from "firebase/database"; 
+import { ref, set, get, child, update } from "firebase/database"; 
 
-import { Divider } from '@mui/material';
+import { Modal, Box } from '@mui/material';
 
 import { db, auth } from "../firebase_config.js"
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
@@ -17,7 +17,7 @@ import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 // defaultOpen={!checkRegistered(auth.currentUser)}
 // trigger={<Button variant="contained" startIcon={<Avatar src={'https://www.shareicon.net/data/128x128/2015/12/01/680848_vertical_512x512.png'} />}></Button>}
 
-export function CustomPopup({ parentReg, lobby, registerRef}) {
+export function CustomPopup({ lobby, registerRef}) {
     const name_value = useRef("")
     const isOpen = useRef()
 
@@ -40,7 +40,6 @@ export function CustomPopup({ parentReg, lobby, registerRef}) {
                     "uid": user.uid
                   })
                   isOpen.current.close()
-                  parentReg(lobby)
                   registerRef.current = true
                 }
               })
@@ -49,4 +48,66 @@ export function CustomPopup({ parentReg, lobby, registerRef}) {
     </Popup>
     </>
     )
+}
+
+function shuffleArray(array) { // Durstenfeld shuffle from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array 
+  for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+  }
+}
+
+export function HostPopup({ lobby, openState, updateOpen, inProgress }) {
+  const rosterSize = useRef()
+  const names = []
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
+  
+  
+  const handleStart = () => {
+    get(child(ref(db), `lobbies/${lobby}`)).then((snapshot) => {
+      const data = snapshot.toJSON()
+      for (var uid in data.users) {
+        names.push(uid)
+      }
+      shuffleArray(names)
+      if (rosterSize.current.value !== NaN) {
+        update(ref(db, `lobbies/${lobby}/metadata`), {
+          turn: 0,
+          order: names,
+          rosterSize: Number(rosterSize.current.value),
+        }).then(() => {
+          console.log("draft has begun")
+          inProgress.current = true
+        })
+      } 
+    })
+  }
+
+  return (
+    <>
+      <Modal open={openState} onClose={() => {updateOpen(false)}}>
+        <Box sx={style}>
+        <center>
+          <div><h2>Draft Settings</h2></div>
+          <TextField label="Number of Picks" type="number" inputRef={rosterSize} required />
+          <Button variant="contained" onClick={handleStart}>Start Draft </Button>
+        </center>
+        </Box>
+      </Modal>
+    </>
+  )
 }

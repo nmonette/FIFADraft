@@ -2,22 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import { ref, onValue, child, get, set, update } from "firebase/database"; 
 import { db, auth } from "../firebase_config";
 
-import { useLocalStorage } from "../hooks"
 
 import Roster  from "../components/Roster";
-import { CustomPopup } from "../components/Popup";
+import { CustomPopup, HostPopup } from "../components/Popup";
 import { useLoaderData } from "react-router-dom";
 
 import { Customautocomplete, calculatePick } from "../components/Draft"
 
-import { Button, Snackbar, Alert } from "@mui/material";
+import { Button, Snackbar, Alert, Typography, IconButton } from "@mui/material";
+import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 
 import players from "../playerdata/fifa23.json"
  
 export async function lobbyLoader({ params }) {
     let in_progress = false
     let registered = false
-    // fix loader so that it will change lobby for when you join an in-progress draft... this means returning a larger object from the loader and then accessing it with useLoaderData()
+    let host = false
     try {
         const snapshot = await get(child(ref(db), `lobbies/${params.lobbyid}`));
         if (!snapshot.exists() ) {
@@ -27,8 +27,9 @@ export async function lobbyLoader({ params }) {
               })
             return {
                 lobby: params.lobbyid,
-                registered: false, // fix this so that when they log on for the first time, this still lets them draft
+                registered: false, 
                 in_progress: false,
+                host: true,
             }
         }
         else if (snapshot.toJSON().users === undefined) {
@@ -36,20 +37,25 @@ export async function lobbyLoader({ params }) {
                 lobby: params.lobbyid,
                 registered: false, 
                 in_progress: false,
+                host: false,
             }
         }
         else {
             console.log(`turn:  ${snapshot.toJSON().metadata.turn}`)
             if (snapshot.toJSON().metadata.turn !== -1) {
-                in_progress = true
+                in_progress = true;
             }
             if (auth.currentUser !== null && auth.currentUser.uid in snapshot.toJSON().users) {
                 registered = true;
+            }
+            if (auth.currentUser !== null && auth.currentUser.uid === snapshot.toJSON().metadata.host) {
+                host = true;
             }
             return {
                 lobby: params.lobbyid,
                 registered: registered,
                 in_progress: in_progress,
+                host: false, // add if statement to check if host via auth.currentUser.uid
             }
         }
     }
@@ -62,18 +68,19 @@ export async function lobbyLoader({ params }) {
 export function Lobby() {
     const components = useRef(0)
     const [menus, updateMenus] = useState([])
-    const [lobby_record, updateLobby] = useLocalStorage() 
     const loaderData = useLoaderData()
     const lobby = loaderData.lobby
     const player = useRef("")
-    let pickNumber = useRef(0)
     let registered = useRef(false)
     let disableList = useRef([])
+    let playerUp = useRef("")
+    let inProgress = useRef(false)
     const [errorOpen, updateError] = useState(false)
     const [successOpen, updateSuccess] = useState(false)
+    const [hostOpen, updateHost] = useState(false)
+
 
     const handlePick = () => {
-        console.log(disableList)
         if (!disableList.current.includes(player.current.value)) {
             get(child(ref(db), `lobbies/${lobby}`)).then((snapshot) => {
                     const pick = players.filter((item) => (item["Full Name"] === player.current.value))[0]
@@ -107,11 +114,25 @@ export function Lobby() {
             if (lobby === null) {
                 throw Error();
             }
-            if (snapshot.exists) {
+            if (snapshot.exists) { 
                 const temp = []
                 const data = snapshot.toJSON()
-
-                pickNumber.current = data.metadata.turn
+                
+                if (data.metadata.turn !== -1) {
+                    const pick = calculatePick(Object.keys(data.users).length, data.metadata.turn)
+                    const uidUp = Object.values(data.metadata.order)[pick]
+                    console.log(pick)
+                    try { // fix this
+                        playerUp.current = {
+                            uid: uidUp,
+                            name: data.users[uidUp].title,
+                        }
+                    }
+                    catch (error) {
+                        console.log(playerUp.current)
+                        throw error;
+                    }
+                }
 
                 for (var user in data.users) {
                     temp.push(<div key={user}><Roster user={data.users[user]} /></div>)
@@ -126,20 +147,38 @@ export function Lobby() {
     }, [components.current])
 
     if (!loaderData.registered && !loaderData.in_progress && !registered.current) { 
-        // registered.current = true
         return(
             <>
                 <h1><center>Fifa Draft</center></h1>
                 {menus}
-                <CustomPopup parentReg={updateLobby} lobby={lobby} registerRef={registered} />
+                <CustomPopup lobby={lobby} registerRef={registered} />
             </>
         )
     }
+    else if (loaderData.host && !(loaderData.in_progress || inProgress.current)) {
+        return (
+            <>
+                <center>
+                    <h1>Fifa Draft</h1>
+                    <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography>  
+                    <Customautocomplete up={true} inputRef={player} disabled={!(auth.currentUser.uid === playerUp.current.uid)} />
+                    <div><Button variant="contained" onClick={handlePick} disabled={!(auth.currentUser.uid === playerUp.current.uid)} disableElevation required> Draft Player</Button></div>
+                    <IconButton variant="contained" onClick={() => updateHost(true)}><PlayCircleFilledIcon/></IconButton>
+                    <HostPopup lobby={lobby} openState={hostOpen} updateOpen={updateHost} inProgress={inProgress} />
+                </center>
+                {menus}
+                <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
+                <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={successOpen} autoHideDuration={4000} onClose={() => updateSuccess(false)}><Alert variant ="filled" severity="success">Player taken successfully</Alert></Snackbar>
+            </>
+        )
+    }
+
     else if (!loaderData.registered && loaderData.in_progress && !registered.current) { // add "draft in session" snackbar component
         return (
             <>
                 <center>
                     <h1>Fifa Draft</h1>
+                    <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography> 
                 </center>
                 {menus}
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={true} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Draft already in progress</Alert></Snackbar>
@@ -151,8 +190,9 @@ export function Lobby() {
             <>
                 <center>
                     <h1>Fifa Draft</h1>
-                    <Customautocomplete up={true} inputRef={player} />
-                    <div><Button variant="contained" onClick={handlePick} disableElevation required> Draft Player</Button></div>
+                    <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography>  
+                    <Customautocomplete up={true} inputRef={player} disabled={(auth.currentUser.uid !== playerUp.current.uid)} />
+                    <div><Button variant="contained" onClick={handlePick} disabled={(auth.currentUser.uid !== playerUp.current.uid)} disableElevation required> Draft Player</Button></div>
                 </center>
                 {menus}
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
