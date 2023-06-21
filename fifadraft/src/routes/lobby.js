@@ -84,8 +84,9 @@ export function Lobby() {
     const handlePick = () => {
         if (!disableList.current.includes(player.current.value)) {
             get(child(ref(db), `lobbies/${lobby}`)).then((snapshot) => {
-                    const pick = players.filter((item) => (item["Full Name"] === player.current.value))[0]
                     const data = snapshot.exportVal()
+                    const pick = players.filter((item) => (item["Full Name"] === player.current.value))[0]
+                    pick["Pick Number"] = data.metadata.turn + 1
                     const user = data["users"][auth.currentUser.uid]
 
                     var roster = []
@@ -123,18 +124,11 @@ export function Lobby() {
                     const pick = calculatePick(Object.keys(data.users).length, data.metadata.turn)
                     const uidUp = Object.values(data.metadata.order)[pick]
                     console.log(pick)
-                    try { // fix this
-                        playerUp.current = {
-                            uid: uidUp,
-                            name: data.users[uidUp].title,
-                        }
-                    }
-                    catch (error) {
-                        console.log(playerUp.current)
-                        throw error;
+                    playerUp.current = {
+                        uid: uidUp,
+                        name: data.users[uidUp].title,
                     }
                 }
-
                 for (var user in data.users) {
                     temp.push(<div key={user}><Roster user={data.users[user]} /></div>)
                 }
@@ -143,7 +137,14 @@ export function Lobby() {
                 if (data.metadata.taken !== 0) {
                     disableList.current = Object.values(data.metadata.taken)
                 }
-                if (data.metadata.turn !== -1 && data.metadata.turn === data.metadata.rosterSize * Object.keys(data.users).length) {
+                if (data.metadata.turn !== -1 && data.metadata.turn  === data.metadata.rosterSize * Object.keys(data.users).length) {
+                    // const playerdata = []
+                    // for (var user in data.users) {
+                    //     for (var [index, player] in Object.entries(data.users[user].roster)) {
+                    //         player["User"] = Number(index)
+                    //         playerdata.push(player)
+                    //     }
+                    // }
                     updateFinished(true)
                 }
             }

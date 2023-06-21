@@ -4,7 +4,13 @@ import Box  from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 
 const columns = [
-    {
+      {
+      field: 'Pick Number',
+      headerName: 'Pick Number',
+      width: 150,
+      editable: true,
+      },
+      {
       field: 'Known As',
       headerName: 'Known As',
       width: 150,
