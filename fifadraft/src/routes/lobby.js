@@ -9,7 +9,7 @@ import { useLoaderData } from "react-router-dom";
 
 import { Customautocomplete, calculatePick } from "../components/Draft"
 
-import { Button, Snackbar, Alert, Typography, IconButton } from "@mui/material";
+import { Button, Snackbar, Alert, Typography, IconButton, Grid, Paper } from "@mui/material";
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 
 import players from "../playerdata/fifa23.json"
@@ -130,7 +130,7 @@ export function Lobby() {
                     }
                 }
                 for (var user in data.users) {
-                    temp.push(<div key={user}><Roster user={data.users[user]} /></div>)
+                    temp.push(<Grid item md={12} xs={1}><Paper variant="outlined" elevation={1} ><Roster user={data.users[user]} /></Paper></Grid>)
                 }
                 components.current = temp.length
                 updateMenus(temp)
@@ -156,7 +156,6 @@ export function Lobby() {
             <>
                 <h1><center>Fifa Draft</center></h1>
                 <center><Typography sx={{color: "red"}} variant="h4">Draft has concluded</Typography></center> 
-                {menus} 
                 {/* confetti here */}
             </>
         )
@@ -165,7 +164,7 @@ export function Lobby() {
         return(
             <>
                 <h1><center>Fifa Draft</center></h1>
-                {menus}
+                <Grid container spacing={0.5}>{menus}</Grid>
                 <CustomPopup lobby={lobby} registerRef={registered} />
             </>
         )
@@ -181,7 +180,7 @@ export function Lobby() {
                     <IconButton variant="contained" onClick={() => updateHost(true)}><PlayCircleFilledIcon/></IconButton>
                     <HostPopup lobby={lobby} openState={hostOpen} updateOpen={updateHost} inProgress={inProgress} />
                 </center>
-                {menus}
+                <Grid container spacing={0.5}>{menus}</Grid>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={successOpen} autoHideDuration={4000} onClose={() => updateSuccess(false)}><Alert variant ="filled" severity="success">Player taken successfully</Alert></Snackbar>
             </>
@@ -195,7 +194,7 @@ export function Lobby() {
                     <h1>Fifa Draft</h1>
                     <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography> 
                 </center>
-                {menus}
+                <Grid container spacing={0.5}>{menus}</Grid>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={true} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Draft already in progress</Alert></Snackbar>
             </>
         )
@@ -209,7 +208,7 @@ export function Lobby() {
                     <Customautocomplete up={true} inputRef={player} disabled={(auth.currentUser.uid !== playerUp.current.uid)} />
                     <div><Button variant="contained" onClick={handlePick} disabled={(auth.currentUser.uid !== playerUp.current.uid)} disableElevation required> Draft Player</Button></div>
                 </center>
-                {menus}
+                <Grid container>{menus}</Grid>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={successOpen} autoHideDuration={4000} onClose={() => updateSuccess(false)}><Alert variant ="filled" severity="success">Player taken successfully</Alert></Snackbar>
             </>

@@ -78,24 +78,24 @@ export function HostPopup({ lobby, openState, updateOpen, inProgress }) {
   
   
   const handleStart = () => {
-    get(child(ref(db), `lobbies/${lobby}`)).then((snapshot) => {
-      const data = snapshot.toJSON()
-      for (var uid in data.users) {
-        names.push(uid)
-      }
-      shuffleArray(names)
-      if (rosterSize.current.value !== NaN) {
-        update(ref(db, `lobbies/${lobby}/metadata`), {
-          turn: 0,
-          order: names,
-          rosterSize: Number(rosterSize.current.value),
-        }).then(() => {
-          console.log("draft has begun")
-          inProgress.current = true
-          updateOpen(false)
-        })
-      } 
-    })
+    if (rosterSize.current.value !== NaN && rosterSize.current.value > 0) {
+      get(child(ref(db), `lobbies/${lobby}`)).then((snapshot) => {
+        const data = snapshot.toJSON()
+        for (var uid in data.users) {
+          names.push(uid)
+        }
+        shuffleArray(names)
+          update(ref(db, `lobbies/${lobby}/metadata`), {
+            turn: 0,
+            order: names,
+            rosterSize: Number(rosterSize.current.value),
+          }).then(() => {
+            console.log("draft has begun")
+            inProgress.current = true
+            updateOpen(false)
+          })
+      })
+    }
   }
 
   return (
