@@ -3,16 +3,16 @@ import { ref, onValue, child, get, set, update } from "firebase/database";
 import { db, auth } from "../firebase_config";
 
 
-import Roster  from "../components/Roster";
+import { Roster }  from "../components/Roster";
 import { CustomPopup, HostPopup } from "../components/Popup";
 import { useLoaderData } from "react-router-dom";
 
 import { Customautocomplete, calculatePick } from "../components/Draft"
 
-import { Button, Snackbar, Alert, Typography, IconButton, Grid, Paper } from "@mui/material";
-import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
+import { Button, Snackbar, Alert, Typography, Grid, Paper } from "@mui/material";
 
 import players from "../playerdata/fifa23.json"
+import { HostBar, LobbyBar } from "../components/Toolbar";
  
 export async function lobbyLoader({ params }) {
     let in_progress = false
@@ -154,8 +154,9 @@ export function Lobby() {
     if (draftFinished) {
         return (
             <>
-                <h1><center>Fifa Draft</center></h1>
+                <LobbyBar/>
                 <center><Typography sx={{color: "red"}} variant="h4">Draft has concluded</Typography></center> 
+                <Grid container sx={{m:-2}} spacing={0.5}>{menus}</Grid>
                 {/* confetti here */}
             </>
         )
@@ -163,8 +164,8 @@ export function Lobby() {
     else if (!loaderData.registered && !loaderData.in_progress && !registered.current) { 
         return(
             <>
-                <h1><center>Fifa Draft</center></h1>
-                <Grid container spacing={0.5}>{menus}</Grid>
+                <LobbyBar/>
+                <Grid container sx={{m:2}} spacing={0.5}>{menus}</Grid>
                 <CustomPopup lobby={lobby} registerRef={registered} />
             </>
         )
@@ -172,15 +173,14 @@ export function Lobby() {
     else if (loaderData.host && !(loaderData.in_progress || inProgress.current)) {
         return (
             <>
+                <HostBar buttonClick={() => updateHost(true)} />
                 <center>
-                    <h1>Fifa Draft</h1>
                     <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography>  
                     <Customautocomplete up={true} inputRef={player} disabled={!(auth.currentUser.uid === playerUp.current.uid)} />
                     <div><Button variant="contained" onClick={handlePick} disabled={!(auth.currentUser.uid === playerUp.current.uid)} disableElevation required> Draft Player</Button></div>
-                    <IconButton variant="contained" onClick={() => updateHost(true)}><PlayCircleFilledIcon/></IconButton>
                     <HostPopup lobby={lobby} openState={hostOpen} updateOpen={updateHost} inProgress={inProgress} />
                 </center>
-                <Grid container spacing={0.5}>{menus}</Grid>
+                <Grid container sx={{m:2}} spacing={0.5}>{menus}</Grid>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={successOpen} autoHideDuration={4000} onClose={() => updateSuccess(false)}><Alert variant ="filled" severity="success">Player taken successfully</Alert></Snackbar>
             </>
@@ -190,11 +190,11 @@ export function Lobby() {
     else if (!loaderData.registered && loaderData.in_progress && !registered.current) { // add "draft in session" snackbar component
         return (
             <>
+                <LobbyBar/>
                 <center>
-                    <h1>Fifa Draft</h1>
                     <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography> 
                 </center>
-                <Grid container spacing={0.5}>{menus}</Grid>
+                <Grid sx={{m:2}} container spacing={0.5}>{menus}</Grid>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={true} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Draft already in progress</Alert></Snackbar>
             </>
         )
@@ -202,13 +202,13 @@ export function Lobby() {
     else if (loaderData.registered || registered.current) {
         return(
             <>
+                <LobbyBar/>
                 <center>
-                    <h1>Fifa Draft</h1>
                     <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography>  
                     <Customautocomplete up={true} inputRef={player} disabled={(auth.currentUser.uid !== playerUp.current.uid)} />
                     <div><Button variant="contained" onClick={handlePick} disabled={(auth.currentUser.uid !== playerUp.current.uid)} disableElevation required> Draft Player</Button></div>
                 </center>
-                <Grid container>{menus}</Grid>
+                <Grid sx={{m:2}} container>{menus}</Grid>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={successOpen} autoHideDuration={4000} onClose={() => updateSuccess(false)}><Alert variant ="filled" severity="success">Player taken successfully</Alert></Snackbar>
             </>

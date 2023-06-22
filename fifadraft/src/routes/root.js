@@ -1,12 +1,10 @@
-import { Modal, Button, Box, Typography } from "@mui/material";
+import { Modal, Button, Box, Typography, Grid } from "@mui/material";
 import { useState } from "react";
-
-import { ref, set } from "firebase/database"; 
-import { db } from "../firebase_config";
 
 import { useNavigate } from "react-router-dom";
 
 import cryptoRandomString from 'crypto-random-string';
+import { RootBar } from "../components/Toolbar";
 
 export default function Root() {
     let [modalOpen, setOpen] = useState(false);
@@ -35,10 +33,9 @@ export default function Root() {
     }
     return (
         <>
+        <RootBar buttonClick={() => setOpen(true)}/>
         <center>
-        <Typography id="heading" variant="h6" component="h1">FIFA Draft</Typography>
-        <Button variant="contained" onClick={() => setOpen(true)} disableElevation>Create Lobby</Button>
-        <Modal open={modalOpen} aria-labelledby="modal-modal-title" variant="h6" component="h2">
+        <Modal open={modalOpen} aria-labelledby="modal-modal-title" variant="h6" component="h2" onClose={() => {setOpen(false)}}>
             <div>
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h6" component="h3">
@@ -51,6 +48,10 @@ export default function Root() {
             </div>
         </Modal>
         </center>
+        <Grid container spacing={0} columns={24}>
+            <Grid item xs={12}>Hello</Grid>
+            <Grid item xs={12}>Hello</Grid>
+        </Grid>
         </> 
     )
 }
