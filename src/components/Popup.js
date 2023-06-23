@@ -88,6 +88,7 @@ function shuffleArray(array) { // Durstenfeld shuffle from https://stackoverflow
 export function HostPopup({ lobby, openState, updateOpen, inProgress }) {
   const rosterSize = useRef()
   const names = []
+  const [errorOpen, updateError] = useState(false)
 
   const style = {
     position: 'absolute',
@@ -120,6 +121,9 @@ export function HostPopup({ lobby, openState, updateOpen, inProgress }) {
           })
       })
     }
+    else {
+      updateError(true)
+    }
   }
 
   return (
@@ -133,6 +137,7 @@ export function HostPopup({ lobby, openState, updateOpen, inProgress }) {
         </center>
         </Box>
       </Modal>
+      <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Please select a value above 0</Alert></Snackbar>
     </>
   )
 }
