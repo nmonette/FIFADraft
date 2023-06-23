@@ -4,11 +4,11 @@ import Root from "./routes/root.js"
 import { Lobby, lobbyLoader } from "./routes/lobby.js"
 import Error from "./routes/error.js"
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { createHashRouter, RouterProvider } from "react-router-dom"
 
 
 
-const router = createBrowserRouter([
+const router = createHashRouter([
     {
         path: "/FIFADraft",
         element: <Root />,
