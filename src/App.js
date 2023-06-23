@@ -10,22 +10,22 @@ import { createHashRouter, RouterProvider } from "react-router-dom"
 
 const router = createHashRouter([
     {
-        path: "/FIFADraft",
+        path: "/",
         element: <Root />,
         errorElement: <Error />,
-    }, 
+    },
     {
-        path: "/FIFADraft/lobby/:lobbyid", 
+        path: "lobby/:lobbyid", 
         element: <Lobby />,
         loader: lobbyLoader,
         errorElement: <Error />,
-    },
-]) // , {basename:"/FIFADraft"} 
+    }
+], {shimErrors: true}) // , {basename:"localhost:3000/FIFADraft"}
 
 export default function App() {
     document.title = "FIFA Draft"
    return (
-        <RouterProvider router={router} />
+        <RouterProvider router={router} basename={"/FIFADraft"} />
    )
 }
 
