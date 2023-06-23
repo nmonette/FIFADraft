@@ -1,5 +1,4 @@
 import { AppBar, Toolbar, Button, Typography } from "@mui/material";
-import TouchRipple from "@mui/material/ButtonBase/TouchRipple";
 
 export function RootBar ({ buttonClick }) {
     return(

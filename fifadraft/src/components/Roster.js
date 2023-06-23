@@ -1,12 +1,9 @@
-import Collapsible  from 'react-collapsible';
-
-import { Box, Autocomplete, TextField }  from '@mui/material';
+import { Box, Tab, Tabs }  from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-
-import { useState } from 'react';
 
 import players from "../playerdata/fifa23.json"
 
+import { useState } from 'react';
 
 const columns = [
       {
@@ -491,21 +488,64 @@ const columns = [
       },      
     ];
 
-export function Roster({ user }) {
+// export function Roster({ user }) {
+//   let roster = [];
+//   if (user['roster'] !== 0) {
+//     roster = Object.values(user['roster'])
+//   }
+//   return (
+//     <div key={user["uid"]}>
+//     <Collapsible trigger={user["title"]}>
+//       <Box sx={{ height: 400, width: '80%' }}>
+//         <DataGrid rows={roster} columns={columns} getRowId={(object) => object["id"]}/>
+//     </Box>
+//     </Collapsible>
+//     </div>
+//   );
+// }
+
+function Roster({ user, index, value }) {
   let roster = [];
   if (user['roster'] !== 0) {
     roster = Object.values(user['roster'])
   }
-  return (
-    <div key={user["uid"]}>
-    <Collapsible trigger={user["title"]}>
-      <Box sx={{ height: 400, width: '80%' }}>
-        <DataGrid rows={roster} columns={columns} getRowId={(object) => object["id"]}/>
-    </Box>
-    </Collapsible>
+  return (// key={user["uid"]}
+    <div role="tabpanel" hidden={value !== index} style={{height:"100%", overflow:"auto"}}> 
+      {index === value && (<Box sx={{ m: 1, p: 2, height:400}} key={user["uid"]} >
+        <DataGrid sx={{height:400}} rows={roster} columns={columns} getRowId={(object) => object["id"]}/>
+      </Box>)}
     </div>
   );
 }
+
+export function Rosters ({ users }) {
+  const [menuIndex, updateIndex] = useState(0)
+  const tabs = []
+  const rosters = []
+  let total = []
+  for (let i=0; i < users.length; i++) { 
+    tabs.push(<Tab key={i} label={users[i].title}/>)
+    rosters.push(<Roster key={i} user={users[i]} index={i} value={menuIndex}/>)
+    total = total .concat( Object.values(users[i].roster) )
+  }
+
+  tabs.push(<Tab key={-1} label={"Total"}/>)
+  rosters.push(<Roster key={rosters.length} user={{roster: total, uid: "total", title: "total"}} index={rosters.length} value={menuIndex}/>)
+  
+  return(
+    <>
+    <center>
+      <Box sx={{ maxwidth: "md", ml:5, mr:10, mt:10, flexGrow: 1, bgcolor: 'background.paper', display: 'flex', width:"90%", height: 500 }}>
+        <Tabs sx={{minWidth:'150px'}} orientation='vertical' variant='scrollable' visibleScrollbar value={menuIndex} onChange={(event, newValue) => updateIndex(newValue)}>
+          {tabs}
+        </Tabs>
+        {rosters}
+      </Box>
+      </center>
+    </>
+  )
+}
+
 
 const viewerColumns = [
   {
@@ -984,5 +1024,9 @@ const viewerColumns = [
   },      
 ];
 
-
+export function PlayerViewer () {
+  return (
+    <DataGrid rows={players} columns={viewerColumns} />
+  );
+}
 

@@ -3,13 +3,13 @@ import { ref, onValue, child, get, set, update } from "firebase/database";
 import { db, auth } from "../firebase_config";
 
 
-import { Roster }  from "../components/Roster";
+import { Rosters }  from "../components/Roster";
 import { CustomPopup, HostPopup } from "../components/Popup";
 import { useLoaderData } from "react-router-dom";
 
 import { Customautocomplete, calculatePick } from "../components/Draft"
 
-import { Button, Snackbar, Alert, Typography, Grid, Paper } from "@mui/material";
+import { Button, Snackbar, Alert, Typography, Grid } from "@mui/material";
 
 import players from "../playerdata/fifa23.json"
 import { HostBar, LobbyBar } from "../components/Toolbar";
@@ -55,7 +55,7 @@ export async function lobbyLoader({ params }) {
                 lobby: params.lobbyid,
                 registered: registered,
                 in_progress: in_progress,
-                host: false, // add if statement to check if host via auth.currentUser.uid
+                host: host, 
             }
         }
     }
@@ -128,87 +128,111 @@ export function Lobby() {
                         uid: uidUp,
                         name: data.users[uidUp].title,
                     }
+                    if (inProgress.current !== true) {
+                        inProgress.current = true;
+                    }
                 }
-                for (var user in data.users) {
-                    temp.push(<Grid item md={12} xs={1}><Paper variant="outlined" elevation={1} ><Roster user={data.users[user]} /></Paper></Grid>)
-                }
-                components.current = temp.length
-                updateMenus(temp)
-                if (data.metadata.taken !== 0) {
-                    disableList.current = Object.values(data.metadata.taken)
-                }
-                if (data.metadata.turn !== -1 && data.metadata.turn  === data.metadata.rosterSize * Object.keys(data.users).length) {
-                    // const playerdata = []
+                if (data.users !== undefined) {
+                    let count = 0
+                    // const tabs = []
                     // for (var user in data.users) {
-                    //     for (var [index, player] in Object.entries(data.users[user].roster)) {
-                    //         player["User"] = Number(index)
-                    //         playerdata.push(player)
-                    //     }
+                    //     temp.push(<Grid key={count} item md={12} xs={1}><Paper variant="outlined" elevation={1} ><Roster user={data.users[user]} /></Paper></Grid>)
+                    //     count++
+                    //     // tabs.push(<Roster user={data.users[user]} />)
+                    //     // temp.push(<Tab label={data.users[uid].title} />)
                     // }
-                    updateFinished(true)
+                    components.current = temp.length
+                    // updateMenus(temp)
+                    updateMenus(Object.values(data.users))
+                    if (data.metadata.taken !== 0) {
+                        disableList.current = Object.values(data.metadata.taken)
+                    }
+                    if (data.metadata.turn !== -1 && data.metadata.turn  === data.metadata.rosterSize * Object.keys(data.users).length) {
+                        // const playerdata = []
+                        // for (var user in data.users) {
+                        //     for (var [index, player] in Object.entries(data.users[user].roster)) {
+                        //         player["User"] = Number(index)
+                        //         playerdata.push(player)
+                        //     }
+                        // }
+                        updateFinished(true)
+                    }
                 }
+                
             }
         })
     }, [components.current])
-
+// use MUI Toggle Button to give different view options
     if (draftFinished) {
         return (
             <>
                 <LobbyBar/>
-                <center><Typography sx={{color: "red"}} variant="h4">Draft has concluded</Typography></center> 
-                <Grid container sx={{m:-2}} spacing={0.5}>{menus}</Grid>
-                {/* confetti here */}
+                <center><Typography sx={{mt: 5, mb: 4, color: "red"}} variant="h4">Draft has concluded</Typography></center> 
+                <Rosters users={menus}/>
+                {/* <Grid container sx={{m:2}} spacing={0.5}>{menus}</Grid> */}
             </>
         )
     }
-    else if (!loaderData.registered && !loaderData.in_progress && !registered.current) { 
+    else if (!(loaderData.registered || registered.current) && !loaderData.in_progress) { 
+        console.log(1)
         return(
             <>
                 <LobbyBar/>
-                <Grid container sx={{m:2}} spacing={0.5}>{menus}</Grid>
+                {/* <Grid container sx={{m:2}} spacing={0.5}>{menus}</Grid> */}
                 <CustomPopup lobby={lobby} registerRef={registered} />
             </>
         )
     }
     else if (loaderData.host && !(loaderData.in_progress || inProgress.current)) {
+        console.log(2)
         return (
             <>
                 <HostBar buttonClick={() => updateHost(true)} />
                 <center>
-                    <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography>  
-                    <Customautocomplete up={true} inputRef={player} disabled={!(auth.currentUser.uid === playerUp.current.uid)} />
-                    <div><Button variant="contained" onClick={handlePick} disabled={!(auth.currentUser.uid === playerUp.current.uid)} disableElevation required> Draft Player</Button></div>
-                    <HostPopup lobby={lobby} openState={hostOpen} updateOpen={updateHost} inProgress={inProgress} />
+                  <HostPopup lobby={lobby} openState={hostOpen} updateOpen={updateHost} inProgress={inProgress} />
                 </center>
-                <Grid container sx={{m:2}} spacing={0.5}>{menus}</Grid>
-                <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
-                <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={successOpen} autoHideDuration={4000} onClose={() => updateSuccess(false)}><Alert variant ="filled" severity="success">Player taken successfully</Alert></Snackbar>
+                {/* <Grid container sx={{m:2}} spacing={0.5}>{menus}</Grid> */}
+                <Rosters users={menus}/>
             </>
         )
     }
 
-    else if (!loaderData.registered && loaderData.in_progress && !registered.current) { // add "draft in session" snackbar component
+    else if (!(loaderData.registered || registered.current) && loaderData.in_progress) { // add "draft in session" snackbar component
+        console.log(3)
         return (
             <>
                 <LobbyBar/>
                 <center>
-                    <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography> 
+                    <Typography sx={{mt: 5, mb: 4, color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography> 
                 </center>
-                <Grid sx={{m:2}} container spacing={0.5}>{menus}</Grid>
+                {/* <Grid sx={{m:2}} container spacing={0.5}>{menus}</Grid> */}
+                <Rosters users={menus}/>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={true} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Draft already in progress</Alert></Snackbar>
             </>
         )
     }
-    else if (loaderData.registered || registered.current) {
+    else if ((loaderData.registered || registered.current) && !(loaderData.in_progress || inProgress.current)) {
+        console.log(4)
+        return(
+            <>
+                <LobbyBar/>
+                {/* <Grid sx={{m:2}} spacing={0.5} container>{menus}</Grid> */}
+                <Rosters users={menus}/>
+            </>
+        )
+    }
+    else if ((loaderData.registered || registered.current)) {
+        console.log(5)
         return(
             <>
                 <LobbyBar/>
                 <center>
-                    <Typography sx={{color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography>  
+                    <Typography sx={{mt: 5, mb: 4, color: "red"}} variant="h4">{playerUp.current.name} is up to pick!</Typography>  
                     <Customautocomplete up={true} inputRef={player} disabled={(auth.currentUser.uid !== playerUp.current.uid)} />
-                    <div><Button variant="contained" onClick={handlePick} disabled={(auth.currentUser.uid !== playerUp.current.uid)} disableElevation required> Draft Player</Button></div>
+                    <div><Button sx={{mt:1}} variant="contained" onClick={handlePick} disabled={(auth.currentUser.uid !== playerUp.current.uid)} disableElevation required>Draft Player</Button></div>
                 </center>
-                <Grid sx={{m:2}} container>{menus}</Grid>
+                {/* <Grid sx={{m:2}} spacing={0.5} container>{menus}</Grid> */}
+                <Rosters users={menus}/>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={errorOpen} autoHideDuration={4000} onClose={() => updateError(false)}><Alert variant ="filled" severity="error">Player already taken</Alert></Snackbar>
                 <Snackbar anchorOrigin={{vertical: "bottom", horizontal: "right"}} open={successOpen} autoHideDuration={4000} onClose={() => updateSuccess(false)}><Alert variant ="filled" severity="success">Player taken successfully</Alert></Snackbar>
             </>

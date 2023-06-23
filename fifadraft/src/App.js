@@ -6,21 +6,24 @@ import Error from "./routes/error.js"
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
+
+
 const router = createBrowserRouter([
     {
         path: "/",
         element: <Root />,
-        // errorElement: <Error />,
+        errorElement: <Error />,
     }, 
     {
         path: "lobby/:lobbyid", 
         element: <Lobby />,
         loader: lobbyLoader,
-        // errorElement: <Error />,
+        errorElement: <Error />,
     },
 ])
 
 export default function App() {
+    document.title = "FIFA Draft"
    return (
         <RouterProvider router={router} />
    )
