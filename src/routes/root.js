@@ -11,7 +11,7 @@ export default function Root() {
 
     const lobby = cryptoRandomString({ length:12 })
 
-    const lobby_link = `/FIFADraft/lobby/${lobby}`
+    const lobby_link = `/FIFADraft/#/lobby/${lobby}`
 
     const navigate = useNavigate()
 
