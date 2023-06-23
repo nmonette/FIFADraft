@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/FIFADraft/static/css/main.4291727d.css",
-    "main.js": "/FIFADraft/static/js/main.09ff0c01.js",
+    "main.js": "/FIFADraft/static/js/main.fe40404b.js",
     "static/js/787.a22b06dc.chunk.js": "/FIFADraft/static/js/787.a22b06dc.chunk.js",
     "index.html": "/FIFADraft/index.html",
     "main.4291727d.css.map": "/FIFADraft/static/css/main.4291727d.css.map",
-    "main.09ff0c01.js.map": "/FIFADraft/static/js/main.09ff0c01.js.map",
+    "main.fe40404b.js.map": "/FIFADraft/static/js/main.fe40404b.js.map",
     "787.a22b06dc.chunk.js.map": "/FIFADraft/static/js/787.a22b06dc.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4291727d.css",
-    "static/js/main.09ff0c01.js"
+    "static/js/main.fe40404b.js"
   ]
 }
