@@ -10,17 +10,17 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 const router = createBrowserRouter([
     {
-        path: "/",
+        path: "/FIFADraft",
         element: <Root />,
         errorElement: <Error />,
     }, 
     {
-        path: "lobby/:lobbyid", 
+        path: "/FIFADraft/lobby/:lobbyid", 
         element: <Lobby />,
         loader: lobbyLoader,
         errorElement: <Error />,
     },
-])
+]) // , {basename:"/FIFADraft"} 
 
 export default function App() {
     document.title = "FIFA Draft"

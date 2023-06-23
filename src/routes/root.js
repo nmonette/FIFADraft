@@ -11,7 +11,7 @@ export default function Root() {
 
     const lobby = cryptoRandomString({ length:12 })
 
-    const lobby_link = `/lobby/${lobby}`
+    const lobby_link = `/FIFADraft/lobby/${lobby}`
 
     const navigate = useNavigate()
 
@@ -28,7 +28,7 @@ export default function Root() {
       };
 
     const handleClick = () => {
-        navigator.clipboard.writeText("localhost:3000" + lobby_link)
+        navigator.clipboard.writeText("nmonette.github.io" + lobby_link)
         navigate(lobby_link)
     }
     return (
