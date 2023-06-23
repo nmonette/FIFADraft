@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/fifadraft/static/css/main.4291727d.css",
+    "main.js": "/fifadraft/static/js/main.3e09de0f.js",
+    "static/js/787.a22b06dc.chunk.js": "/fifadraft/static/js/787.a22b06dc.chunk.js",
+    "index.html": "/fifadraft/index.html",
+    "main.4291727d.css.map": "/fifadraft/static/css/main.4291727d.css.map",
+    "main.3e09de0f.js.map": "/fifadraft/static/js/main.3e09de0f.js.map",
+    "787.a22b06dc.chunk.js.map": "/fifadraft/static/js/787.a22b06dc.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4291727d.css",
+    "static/js/main.3e09de0f.js"
+  ]
+}
