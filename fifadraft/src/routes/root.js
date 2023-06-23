@@ -38,8 +38,8 @@ export default function Root() {
         <Modal open={modalOpen} aria-labelledby="modal-modal-title" variant="h6" component="h2" onClose={() => {setOpen(false)}}>
             <div>
                 <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3">
-                        This button will redirect, as well as copy the link to your clipboard.
+                    <Typography sx={{mb:3}} id="modal-modal-title" variant="h6" component="center">
+                        This button will redirect to the lobby, as well as copy the link to your clipboard.
                     </Typography>
                     <center>
                         <Button onClick={handleClick} variant="contained" disableElevation>New Lobby</Button>
@@ -48,10 +48,11 @@ export default function Root() {
             </div>
         </Modal>
         </center>
-        <Grid container spacing={0} columns={24}>
-            <Grid item xs={12}>Hello</Grid>
-            <Grid item xs={12}>Hello</Grid>
-        </Grid>
+        <Typography sx={{mt:3}} variant="h3" component="center" fontFamily="arial black">Welcome to FIFA Draft</Typography>
+        <Typography sx={{mt:3}} variant="h6" component="center" fontFamily="arial black">
+            To get started, click CREATE LOBBY.
+            Share the link with friends, and click START DRAFT when ready! 
+        </Typography>
         </> 
     )
 }
