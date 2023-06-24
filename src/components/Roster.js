@@ -512,7 +512,7 @@ function Roster({ user, index, value }) {
   return (// key={user["uid"]}
     <div role="tabpanel" hidden={value !== index} style={{height:"100%", overflow:"auto"}}> 
       {index === value && (<Box sx={{ m: 1, p: 2, height:400}} key={user["uid"]} >
-        <DataGrid sx={{height:400}} rows={roster} columns={columns} getRowId={(object) => object["id"]}/>
+        <DataGrid sx={{height:400}} isCellEditable={(cell) => false} rows={roster} columns={columns} getRowId={(object) => object["id"]}/>
       </Box>)}
     </div>
   );
